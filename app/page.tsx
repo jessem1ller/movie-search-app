@@ -1,103 +1,179 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+// import Image from 'next/image';
+import { useEffect, useState } from "react";
+import Modal from "react-modal";
+
+const API_KEY = "94c6a856";
+
+type Movie = {
+  Title: string;
+  Year: string;
+  imdbID: string;
+  Poster: string;
+  Director?: string;
+  Plot?: string;
+};
+
+const HomePage = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [results, setResults] = useState<Movie[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    Modal.setAppElement("#app-modal");
+  }, []);
+
+  const handleSearch = async () => {
+    const response = await fetch(
+      `https://www.omdbapi.com/?s=${searchTerm}&page=${currentPage}&apikey=${API_KEY}`
+    );
+    const data = await response.json();
+    if (data.Response === "True") {
+      setResults(data.Search);
+    } else {
+      setResults([]);
+    }
+  };
+
+  const handleMovieClick = async (imdbID: string) => {
+    const response = await fetch(
+      `https://www.omdbapi.com/?i=${imdbID}&apikey=${API_KEY}`
+    );
+    const data = await response.json();
+    setSelectedMovie(data);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedMovie(null);
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+    handleSearch();
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prevPage) => prevPage - 1);
+      handleSearch();
+    }
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="flex justify-center sm:flex-row sm:items-center sm:gap-6 sm:py-4 ...">
+      <h1 className="text-3xl text-dark-500">Movie Search</h1>
+      <input
+        className="shadow-lg text-lg rounded-lg ring ring-purple-200 focus:ring-2 focus:ring-purple-600 box-sizing: content-box ..."
+        type="search"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="Search for a movie"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleSearch();
+          }
+        }}
+      />
+      <input />
+      <button
+        className="border-purple-200 text-purple-600 hover:border-transparent hover:bg-purple-600 hover:text-white active:bg-purple-700 rounded-lg..."
+        onClick={handleSearch}
+      >
+        Search
+      </button>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      <div style={{ marginTop: "20px" }}>
+        {results.map((movie) => (
+          <div key={movie.imdbID} style={{ marginBottom: "10px" }}>
+            <h3
+              onClick={() => handleMovieClick(movie.imdbID)}
+              className="text-xl text-purple-600 hover:text-purple-800 cursor-pointer"
+            >
+              {movie.Title} ({movie.Year})
+            </h3>
+            <div>
+              <img
+                src={movie.Poster}
+                alt={movie.Title}
+                className="object-cover border-3 rounded-lg"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div>
+        <button onClick={handlePrevPage} disabled={currentPage === 1}>
+          Previous
+        </button>
+        <button onClick={handleNextPage}>Next</button>
+      </div>
+      <div id="app-modal">
+        <Modal isOpen={isModalOpen} onRequestClose={handleCloseModal}>
+          {selectedMovie && (
+            <div>
+              <h2>
+                {selectedMovie.Title} ({selectedMovie.Year})
+              </h2>
+              <div>
+                <img
+                  src={selectedMovie.Poster}
+                  alt={selectedMovie.Title}
+                  className="object-cover border-3 rounded-lg"
+                />
+              </div>
+              <p>
+                <strong>Year:</strong> {selectedMovie.Year}
+              </p>
+              <p>
+                <strong>Genre:</strong> {selectedMovie.Genre}
+              </p>
+              <p>
+                <strong>Actors:</strong> {selectedMovie.Actors}
+              </p>
+              <p>
+                <strong>Language:</strong> {selectedMovie.Language}
+              </p>
+              <p>
+                <strong>Country:</strong> {selectedMovie.Country}
+              </p>
+              <p>
+                <strong>Awards:</strong> {selectedMovie.Awards}
+              </p>
+              <p>
+                <strong>Rating:</strong>{" "}
+                {selectedMovie.Ratings?.map((rating) => (
+                  <span key={rating.Source}>
+                    {rating.Source}: {rating.Value}
+                  </span>
+                ))}
+              </p>
+              <p>
+                <strong>Released:</strong> {selectedMovie.Released}
+              </p>
+              <p>
+                <strong>Runtime:</strong> {selectedMovie.Runtime}
+              </p>
+              <p>
+                <strong>Box Office:</strong> {selectedMovie.BoxOffice}
+              </p>
+              <p>
+                <strong>Director:</strong> {selectedMovie.Director}
+              </p>
+              <p>
+                <strong>Plot:</strong> {selectedMovie.Plot}
+              </p>
+            </div>
+          )}
+        </Modal>
+      </div>
     </div>
   );
-}
+};
+
+export default HomePage;
