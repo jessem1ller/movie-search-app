@@ -81,8 +81,8 @@ const HomePage = () => {
   const sortResults = (order: 'asc' | 'desc') => {
     const sortedResults = [...results].sort((a, b) => {
       return order === 'asc'
-        ? parseInt(a.Year) - parseInt(b.Year) // Older to newer
-        : parseInt(b.Year) - parseInt(a.Year); // Newer to older
+        ? parseInt(a.Year) - parseInt(b.Year)
+        : parseInt(b.Year) - parseInt(a.Year); 
     });
     setResults(sortedResults);
   };
@@ -131,13 +131,13 @@ const HomePage = () => {
         </p>
         <div className="flex space-x-4 mt-4">
           <button
-            className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded"
+            className="bg-purple-700 hover:bg-purple-400 text-white font-bold py-2 px-4 rounded"
             onClick={() => sortResults('asc')}
           >
             Sort Old to New
           </button>
           <button
-            className="bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 rounded"
+            className="bg-purple-700 hover:bg-purple-400 text-white font-bold py-2 px-4 rounded"
             onClick={() => sortResults('desc')}
           >
             Sort New to Old
