@@ -90,7 +90,7 @@ const HomePage = () => {
   return (
     <>
       <div className="flex flex-col items-center justify-center mt-10">
-        <h1 className="text-3xl text-dark-500">Movie Search</h1>
+        <h1 className="text-3xl text-dark-500 p-4">Enter Movie or TV Show Title</h1>
         <div className="flex items-center">
           <input
             className="shadow-md text-lg rounded-l-lg w-72 p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import React from 'react'
 
 const Navbar = () => {
@@ -6,7 +7,8 @@ const Navbar = () => {
         <nav className="bg-purple-800 py-8 px-4">
         {" "}
         <div className="flex justify-between items-center">
-          <h1 className="text-white text-2xl">FlixFinder</h1>
+          <Image className='bg-white bg-opacity-95 p-1 rounded-full' src="/android-chrome-192x192.png" alt="Logo" width={70} height={70} />
+          <h1 className="text-white font-bold text-4xl ">FlixFinder</h1>
           <div className="flex space-x-4">
             {" "}
             <a href="./" className="text-white relative group">
