@@ -31,6 +31,7 @@ const HomePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
 
   useEffect(() => {
     Modal.setAppElement("#app-modal");
@@ -77,6 +78,15 @@ const HomePage = () => {
     }
   };
 
+  const sortResults = (order: 'asc' | 'desc') => {
+    const sortedResults = [...results].sort((a, b) => {
+      return order === 'asc'
+        ? parseInt(a.Year) - parseInt(b.Year) // Older to newer
+        : parseInt(b.Year) - parseInt(a.Year); // Newer to older
+    });
+    setResults(sortedResults);
+  };
+
   return (
     <>
       <div className="flex flex-col items-center justify-center mt-10">
@@ -95,7 +105,7 @@ const HomePage = () => {
             }}
           />
           <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r-lg flex items-center"
+            className="bg-purple-800 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-r-lg flex items-center"
             type="button"
             onClick={handleSearch}
           >
@@ -119,6 +129,20 @@ const HomePage = () => {
           Search for your favorite movies and find detailed information about
           them. Click on the movie for more details.
         </p>
+        <div className="flex space-x-4 mt-4">
+          <button
+            className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded"
+            onClick={() => sortResults('asc')}
+          >
+            Sort Old to New
+          </button>
+          <button
+            className="bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 rounded"
+            onClick={() => sortResults('desc')}
+          >
+            Sort New to Old
+          </button>
+        </div>
       </div>
       {results.length === 0 && totalResults === 0 && (
         <div className="flex justify-center mt-8">
@@ -138,7 +162,7 @@ const HomePage = () => {
             className="border border-gray-300 rounded-lg p-4 text-center cursor-pointer transition duration-300 hover:bg-gray-300 relative group"
             onClick={() => handleMovieClick(movie.imdbID)}
           >
-            <h3 className="text-xl text-purple-600">
+            <h3 className="text-xl text-purple-800">
               {movie.Title} ({movie.Year})
             </h3>
             <Image
@@ -153,8 +177,8 @@ const HomePage = () => {
               height={192}
               unoptimized={!movie.Poster.startsWith("http")}
             />
-            <div className="absolute inset-x-0 bottom-5 flex justify-center">
-              <p className="bg-black bg-opacity-70 text-white p-4 rounded-lg text-lg opacity-0 group-hover:opacity-100 transition duration-300">
+            <div className="absolute inset-x-0 bottom-50 flex justify-center">
+              <p className="bg-purple-800 bg-opacity-5 text-white p-4 rounded-lg text-3xl font-bold opacity-0 group-hover:opacity-100 transition duration-300">
                 More Info
               </p>
             </div>
