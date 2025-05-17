@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
+import About from "./about/page";
+// import Image from "next/image";
 
 const API_KEY = "94c6a856";
 
@@ -12,11 +14,21 @@ type Movie = {
   Poster: string;
   Director?: string;
   Plot?: string;
+  Genre?: string;
+  Actors?: string;
+  Language?: string;
+  Country?: string;
+  Awards?: string;
+  Ratings?: { Source: string; Value: string }[];
+  Released?: string;
+  Runtime?: string;
+  BoxOffice?: string;
 };
 
 const HomePage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState<Movie[]>([]);
+  const [totalResults, setTotalResults] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,10 +42,13 @@ const HomePage = () => {
       `https://www.omdbapi.com/?s=${searchTerm}&page=${currentPage}&apikey=${API_KEY}`
     );
     const data = await response.json();
+    console.log(data);
     if (data.Response === "True") {
       setResults(data.Search);
+      setTotalResults(data.totalResults);
     } else {
       setResults([]);
+      setTotalResults(0);
     }
   };
 
@@ -64,61 +79,117 @@ const HomePage = () => {
   };
 
   return (
-    <div className="flex justify-center sm:flex-row sm:items-center sm:gap-6 sm:py-4 ...">
-      <h1 className="text-3xl text-dark-500">Movie Search</h1>
-      <input
-        className="shadow-lg text-lg rounded-lg ring ring-purple-200 focus:ring-2 focus:ring-purple-600 box-sizing: content-box ..."
-        type="search"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search for a movie"
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            handleSearch();
-          }
-        }}
-      />
-      <input />
-      <button
-        className="border-purple-200 text-purple-600 hover:border-transparent hover:bg-purple-600 hover:text-white active:bg-purple-700 rounded-lg..."
-        onClick={handleSearch}
-      >
-        Search
-      </button>
-
-      <div style={{ marginTop: "20px" }}>
-        {results.map((movie) => (
-          <div key={movie.imdbID} style={{ marginBottom: "10px" }}>
-            <h3
-              onClick={() => handleMovieClick(movie.imdbID)}
-              className="text-xl text-purple-600 hover:text-purple-800 cursor-pointer"
+    <>
+      
+      <div className="flex flex-col items-center justify-center mt-10">
+        <h1 className="text-3xl text-dark-500">Movie Search</h1>
+        <div className="flex items-center">
+          <input
+            className="shadow-md text-lg rounded-l-lg w-72 p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            type="search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search for a movie"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+            }}
+          />
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r-lg flex items-center"
+            type="button"
+            onClick={handleSearch}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              {movie.Title} ({movie.Year})
-            </h3>
-            <div>
-              <img
-                src={movie.Poster}
-                alt={movie.Title}
-                className="object-cover border-3 rounded-lg"
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M11 1a10 10 0 100 20 10 10 0 000-20zm7 10a7 7 0 11-14 0 7 7 0 0114 0zM21 21l-4.35-4.35"
               />
-            </div>
-          </div>
-        ))}
+            </svg>
+          </button>
+        </div>
+        <p className="text-gray-700 text-xl mt-2">
+          Search for your favorite movies and find detailed information about
+          them. Click on the movie for more details.
+        </p>
       </div>
-
-      <div>
-        <button onClick={handlePrevPage} disabled={currentPage === 1}>
-          Previous
-        </button>
-        <button onClick={handleNextPage}>Next</button>
+      {(results.length === 0 && totalResults === 0) && (
+      <div className="flex justify-center mt-8">
+        <img src="/undraw_home-cinema_jdm1.svg" alt="Home Cinema" />
       </div>
+    )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 m-16 p-8">
+  {results.map((movie) => (
+    <div
+      key={movie.imdbID}
+      className="border border-gray-300 rounded-lg p-4 text-center cursor-pointer transition duration-300 hover:bg-gray-300 relative group"
+      onClick={() => handleMovieClick(movie.imdbID)}
+    >
+      <h3 className="text-xl text-purple-600">
+        {movie.Title} ({movie.Year})
+      </h3>
+      <img
+        src={
+          movie.Poster !== "N/A"
+            ? movie.Poster
+            : "/generic-movie-poster.jpg"
+        }
+        alt={movie.Title}
+        className="object-contain rounded-lg w-full h-120 p-2"
+        width={300}
+        height={192}
+        unoptimized={movie.Poster.startsWith("http") ? "false" : "true"}
+      />
+      <div className="absolute inset-x-0 bottom-5 flex justify-center">
+        <p className="bg-black bg-opacity-70 text-white p-4 rounded-lg text-lg opacity-0 group-hover:opacity-100 transition duration-300">
+          More Info
+        </p>
+      </div>
+    </div>
+  ))}
+</div>
+      <div className="flex flex-col items-center mt-4 p-8 cursor-pointer">
+        <p className="mb-4">Total Results: {totalResults}</p>{" "}
+        <div className="flex">
+          <button
+            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-8 rounded-l"
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+          >
+            Prev
+          </button>
+          <button
+            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-8 rounded-r"
+            onClick={handleNextPage}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+      
+      
       <div id="app-modal">
-        <Modal isOpen={isModalOpen} onRequestClose={handleCloseModal}>
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={handleCloseModal}
+          className="bg-white border-3 rounded-lg w-11/12 sm:w-1/2 max-w-2xl mx-auto p-4"
+          overlayClassName="fixed inset-0 text-gray flex justify-center items-center"
+        >
           {selectedMovie && (
-            <div>
-              <h2>
+            <div style={{ maxHeight: "80vh", overflowY: "auto" }}>
+              {" "}
+              <h1 className="text-2xl text-purple-800 mb-4">
                 {selectedMovie.Title} ({selectedMovie.Year})
-              </h2>
+              </h1>
               <div>
                 <img
                   src={selectedMovie.Poster}
@@ -171,7 +242,7 @@ const HomePage = () => {
           )}
         </Modal>
       </div>
-    </div>
+    </>
   );
 };
 
