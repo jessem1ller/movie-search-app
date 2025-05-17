@@ -14,7 +14,7 @@ const Navbar = () => {
               Home
               <span className="absolute left-0 bottom-0 h-1 w-0 bg-white transition-all duration-300 group-hover:w-full"></span>{" "}
             </a>
-            <a href="../pages/about" className="text-white relative group">
+            <a href="/about" className="text-white relative group">
               About
               <span className="absolute left-0 bottom-0 h-1 w-0 bg-white transition-all duration-300 group-hover:w-full"></span>
             </a>

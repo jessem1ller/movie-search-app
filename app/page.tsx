@@ -1,9 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
-import About from "./about/page";
-// import Image from "next/image";
 
 const API_KEY = "94c6a856";
 
@@ -80,7 +79,6 @@ const HomePage = () => {
 
   return (
     <>
-      
       <div className="flex flex-col items-center justify-center mt-10">
         <h1 className="text-3xl text-dark-500">Movie Search</h1>
         <div className="flex items-center">
@@ -122,41 +120,47 @@ const HomePage = () => {
           them. Click on the movie for more details.
         </p>
       </div>
-      {(results.length === 0 && totalResults === 0) && (
-      <div className="flex justify-center mt-8">
-        <img src="/undraw_home-cinema_jdm1.svg" alt="Home Cinema" />
-      </div>
-    )}
+      {results.length === 0 && totalResults === 0 && (
+        <div className="flex justify-center mt-8">
+          <Image
+            src="/undraw_home-cinema_jdm1.svg"
+            alt="Home Cinema"
+            className="border-2 w-120 h-auto"
+            width={384}
+            height={240}
+          />
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 m-16 p-8">
-  {results.map((movie) => (
-    <div
-      key={movie.imdbID}
-      className="border border-gray-300 rounded-lg p-4 text-center cursor-pointer transition duration-300 hover:bg-gray-300 relative group"
-      onClick={() => handleMovieClick(movie.imdbID)}
-    >
-      <h3 className="text-xl text-purple-600">
-        {movie.Title} ({movie.Year})
-      </h3>
-      <img
-        src={
-          movie.Poster !== "N/A"
-            ? movie.Poster
-            : "/generic-movie-poster.jpg"
-        }
-        alt={movie.Title}
-        className="object-contain rounded-lg w-full h-120 p-2"
-        width={300}
-        height={192}
-        unoptimized={movie.Poster.startsWith("http") ? "false" : "true"}
-      />
-      <div className="absolute inset-x-0 bottom-5 flex justify-center">
-        <p className="bg-black bg-opacity-70 text-white p-4 rounded-lg text-lg opacity-0 group-hover:opacity-100 transition duration-300">
-          More Info
-        </p>
+        {results.map((movie) => (
+          <div
+            key={movie.imdbID}
+            className="border border-gray-300 rounded-lg p-4 text-center cursor-pointer transition duration-300 hover:bg-gray-300 relative group"
+            onClick={() => handleMovieClick(movie.imdbID)}
+          >
+            <h3 className="text-xl text-purple-600">
+              {movie.Title} ({movie.Year})
+            </h3>
+            <Image
+              src={
+                movie.Poster !== "N/A"
+                  ? movie.Poster
+                  : "/generic-movie-poster.jpg"
+              }
+              alt={movie.Title}
+              className="object-contain rounded-lg w-full h-120 p-2"
+              width={300}
+              height={192}
+              unoptimized={!movie.Poster.startsWith("http")}
+            />
+            <div className="absolute inset-x-0 bottom-5 flex justify-center">
+              <p className="bg-black bg-opacity-70 text-white p-4 rounded-lg text-lg opacity-0 group-hover:opacity-100 transition duration-300">
+                More Info
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
-    </div>
-  ))}
-</div>
       <div className="flex flex-col items-center mt-4 p-8 cursor-pointer">
         <p className="mb-4">Total Results: {totalResults}</p>{" "}
         <div className="flex">
@@ -175,8 +179,7 @@ const HomePage = () => {
           </button>
         </div>
       </div>
-      
-      
+
       <div id="app-modal">
         <Modal
           isOpen={isModalOpen}
@@ -191,10 +194,12 @@ const HomePage = () => {
                 {selectedMovie.Title} ({selectedMovie.Year})
               </h1>
               <div>
-                <img
+                <Image
                   src={selectedMovie.Poster}
                   alt={selectedMovie.Title}
                   className="object-cover border-3 rounded-lg"
+                  width={300}
+                  height={192}
                 />
               </div>
               <p>
